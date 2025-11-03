@@ -1,29 +1,50 @@
 import csv
+import random
+from datetime import datetime, timedelta
 
-DATASET_FILE_NAME = "./data_collector/dataset.csv"
+# Nom du fichier CSV
+DATA_FILE = "./data_collector/dataset.csv"
 
-def read_file(file_name):
-    with open(file_name, newline='') as csvfile:
-        datareader = csv.reader(csvfile, delimiter=',', quotechar='|')
-        return datareader
+# Fonction pour générer une ligne de données simulée
+def generate_data(date: datetime):
+    # Base réaliste pour un procédé industriel
+    temperature = round(random.uniform(45, 95), 2)  # en °C
+    pression = round(1 + (temperature - 60) * 0.05 + random.uniform(-0.3, 0.3), 2)  # en bar
+    debit = round(random.uniform(10, 20), 2)  # en L/s
+    rendement = round(95 - abs((temperature - 75)) * 0.3 - random.uniform(0, 2), 2)  # en %
+    timestamp = date.strftime("%Y-%m-%dT%H:%M:%S")
 
-def write_new_line(file_name, new_values):
-    with open(file_name, 'w', newline=''):
-        datawriter = csv.writer(file_name, delimiter=',', quotechar='|', quoting=csv.QUOTE_MINIMAL)
-        datawriter.writerow(new_values)
-
-def generate_new_line():
-    new_line = []
-
-    return new_line
+    return [timestamp, temperature, pression, debit, rendement]
 
 
-def main():
-    new_line = generate_new_line()
-    print(new_line)
-    # read_file(DATASET_FILE_NAME)
-    # write_new_line(DATASET_FILE_NAME, new_line)
+# Fonction principale
+def collect_data():
+    # Vérifie si le fichier CSV existe déjà
+    file_exists = False
+    try:
+        with open(DATA_FILE, "r"):
+            file_exists = True
+    except FileNotFoundError:
+        pass
+
+    # Ouvre le fichier en mode ajout
+    with open(DATA_FILE, mode="w", newline="") as f:
+        writer = csv.writer(f)
+
+        # Écrit l'en-tête si le fichier n'existe pas encore
+        if not file_exists:
+            writer.writerow(["timestamp","temperature_C","pression_bar","debit_Lmin","rendement_pct"])
+
+        date=datetime(2000, 1, 1, 0, 0, 0)
+        maintenant=datetime.now()
+        while date < maintenant:
+            data = generate_data(date)
+            writer.writerow(data)
+            f.flush()  # force l'écriture sur le disque
+            print(data)
+            # Tous les 30 jours
+            date += timedelta(days=30)
 
 
 if __name__ == "__main__":
-    main()
+    collect_data()
