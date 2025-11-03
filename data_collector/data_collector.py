@@ -20,20 +20,15 @@ def generate_data(date: datetime):
 # Fonction principale
 def collect_data():
     # Vérifie si le fichier CSV existe déjà
-    file_exists = False
     try:
-        with open(DATA_FILE, "r"):
-            file_exists = True
+        open(DATA_FILE, "r")
     except FileNotFoundError:
         pass
 
     # Ouvre le fichier en mode ajout
     with open(DATA_FILE, mode="w", newline="") as f:
         writer = csv.writer(f)
-
-        # Écrit l'en-tête si le fichier n'existe pas encore
-        if not file_exists:
-            writer.writerow(["timestamp","temperature_C","pression_bar","debit_Lmin","rendement_pct"])
+        writer.writerow(["timestamp","temperature","pression","debit","rendement"])
 
         date=datetime(2000, 1, 1, 0, 0, 0)
         maintenant=datetime.now()
@@ -41,7 +36,6 @@ def collect_data():
             data = generate_data(date)
             writer.writerow(data)
             f.flush()  # force l'écriture sur le disque
-            print(data)
             # Tous les 30 jours
             date += timedelta(days=30)
 
