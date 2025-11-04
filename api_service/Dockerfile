@@ -1,9 +1,8 @@
-# BAse image python
+# Base image python
 FROM python:3.10-slim
 # Set the working directory as /app
 WORKDIR /app
 # Copy the needed files in the working directory
-COPY train_model.py .
 COPY app.py .
 COPY requirements.txt .
 # Install the needed dependencies
