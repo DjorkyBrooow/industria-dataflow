@@ -20,7 +20,11 @@ def collect_data(out = CSV):
     try:
         open(out, "r")
     except FileNotFoundError:
-        pass
+        import os
+        try:
+            os.mkdir("/data")
+        except OSError:
+            pass
 
     # Open file in write mode
     with open(out, mode="w", newline="") as f:
