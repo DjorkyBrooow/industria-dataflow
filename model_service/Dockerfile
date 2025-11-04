@@ -4,13 +4,12 @@ FROM python:3.10-slim
 WORKDIR /app
 # Copy the needed files in the working directory
 COPY train_model.py .
-COPY app.py .
 COPY requirements.txt .
 # Install the needed dependencies
 RUN pip install --no-cache-dir -r requirements.txt
-# Create persistent volume
-VOLUME ["/data"]
-# Expose the port 8001 in order for it to be accessible to the other services
-EXPOSE 8001
-# Run the server
-CMD ["uvicorn","app:app","--host","0.0.0.0","--port","8001"]
+
+# Volume contenant dataset.csv
+ENV CSV_PATH=/data/dataset.csv
+ENV MODEL_PATH=/data/model.pkl
+
+CMD ["python", "train_model.py"]
