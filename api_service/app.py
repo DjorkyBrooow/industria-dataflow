@@ -1,59 +1,41 @@
-from flask import Flask, jsonify, request
+from fastapi import FastAPI, HTTPException
 import pandas as pd
-import requests
 import os
-
-app = Flask(__name__)
-
-# Récupère l'URL du service modèle IA
-MODEL_URL = os.getenv("MODEL_URL", "http://model_service:8000")
-DATA_PATH = "./data_collector/dataset.csv"  # volume partagé entre les conteneurs
+import requests
 
 
-@app.route("/")
-def home():
-    return jsonify({"message": "Bienvenue sur l’API centrale Industria 🚀"})
+app = FastAPI()
+CSV_PATH = os.environ.get('CSV_PATH','/data/dataset.csv')
+MODEL_URL = os.environ.get('MODEL_URL','http://model_service:8001/predict')
 
 
-@app.route("/stats", methods=["GET"])
-def get_stats():
-    """Retourne les statistiques moyennes issues du dataset"""
+@app.get('/stats')
+def stats():
     try:
-        df = pd.read_csv(DATA_PATH)
-        stats = {
-            "temperature_moyenne": round(df["temperature"].mean(), 2),
-            "pression_moyenne": round(df["pression"].mean(), 2),
-            "debit_moyen": round(df["debit"].mean(), 2),
-            "rendement_moyen": round(df["rendement"].mean(), 2)
-        }
-        return jsonify({"status": "OK", "indicateurs": stats})
-    except FileNotFoundError:
-        return jsonify({"error": "Le fichier dataset.csv est introuvable."}), 404
+        df = pd.read_csv(CSV_PATH)
     except Exception as e:
-        return jsonify({"error": f"Erreur lors du calcul des statistiques : {str(e)}"}), 500
+        raise HTTPException(status_code=500, detail=str(e))
+    if df.empty:
+        return {"count":0}
+    return {
+        "count": len(df),
+        "temperature_mean": round(float(df['temperature'].mean()), 2),
+        "pressure_mean": round(float(df['pressure'].mean()), 2),
+        "flow_mean": round(float(df['flow'].mean()), 2),
+    }
 
 
-@app.route("/predict", methods=["POST"])
-def predict():
-    """Appelle le service IA pour prédire le rendement"""
+@app.post('/predict')
+def predict(temperature: float, pressure: float, flow: float):
     try:
-        data = request.get_json()
-        response = requests.post(f"{MODEL_URL}/predict", json=data)
-        if response.status_code == 200:
-            return jsonify({
-                "status": "OK",
-                "entrée": data,
-                "sortie": response.json()
-            })
-        else:
-            return jsonify({"error": f"Erreur du modèle IA : {response.text}"}), 502
-    except requests.exceptions.ConnectionError:
-        return jsonify({"error": "Impossible de contacter le service IA."}), 503
-    except Exception as e:
-        return jsonify({"error": str(e)}), 500
+        r = requests.post(MODEL_URL, json={"temperature": temperature, "pressure": pressure, "flow": flow}, timeout=5)
+    except requests.RequestException as e:
+        raise HTTPException(status_code=503, detail=f"Model service unreachable: {e}")
+    if r.status_code != 200:
+        raise HTTPException(status_code=502, detail="Model error")
+    return r.json()
 
 
-if __name__ == "__main__":
-    app.run(host="0.0.0.0", port=5000)
-
-
+@app.get('/health')
+def health():
+    return {"status":"ok"}

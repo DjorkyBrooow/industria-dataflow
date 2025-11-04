@@ -1,44 +1,42 @@
 import csv
 import random
+import os
 from datetime import datetime, timedelta
 
-# Nom du fichier CSV
-DATA_FILE = "./data_collector/dataset.csv"
+CSV = "/data/dataset.csv"
 
-# Fonction pour générer une ligne de données simulée
 def generate_data(date: datetime):
-    # Base réaliste pour un procédé industriel
+    # Random realistic generation
     temperature = round(random.uniform(45, 95), 2)  # en °C
-    pression = round(1 + (temperature - 60) * 0.05 + random.uniform(-0.3, 0.3), 2)  # en bar
-    debit = round(random.uniform(10, 20), 2)  # en L/s
-    rendement = round(95 - abs((temperature - 75)) * 0.3 - random.uniform(0, 2), 2)  # en %
+    pressure = round(1 + (temperature - 60) * 0.05 + random.uniform(-0.3, 0.3), 2)  # en bar
+    flow = round(random.uniform(10, 20), 2)  # en L/s
+    yield_est = round(95 - abs((temperature - 75)) * 0.3 - random.uniform(0, 2), 2)  # en %
     timestamp = date.strftime("%Y-%m-%dT%H:%M:%S")
 
-    return [timestamp, temperature, pression, debit, rendement]
+    return [timestamp, temperature, pressure, flow, yield_est]
 
-
-# Fonction principale
-def collect_data():
-    # Vérifie si le fichier CSV existe déjà
+def collect_data(out = CSV):
+    # Check existence of file
     try:
-        open(DATA_FILE, "r")
+        open(out, "r")
     except FileNotFoundError:
         pass
 
-    # Ouvre le fichier en mode ajout
-    with open(DATA_FILE, mode="w", newline="") as f:
+    # Open file in write mode
+    with open(out, mode="w", newline="") as f:
         writer = csv.writer(f)
-        writer.writerow(["timestamp","temperature","pression","debit","rendement"])
+        writer.writerow(["timestamp","temperature","pressure","flow","yield_est"])
 
         date=datetime(2000, 1, 1, 0, 0, 0)
         maintenant=datetime.now()
         while date < maintenant:
             data = generate_data(date)
             writer.writerow(data)
-            f.flush()  # force l'écriture sur le disque
-            # Tous les 30 jours
+            f.flush() 
+            # Generate new data every 30 days
             date += timedelta(days=30)
-
+        print(f"File {out} successfully created")
 
 if __name__ == "__main__":
-    collect_data()
+    out = os.environ.get('OUTPUT_PATH','/data/dataset.csv')
+    collect_data(out)

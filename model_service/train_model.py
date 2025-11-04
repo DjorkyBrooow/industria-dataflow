@@ -1,27 +1,39 @@
 # train_model.py
 import pandas as pd
-from sklearn.linear_model import LinearRegression
+from sklearn.ensemble import RandomForestRegressor
+from sklearn.model_selection import train_test_split
+from sklearn.metrics import r2_score, mean_squared_error
 import pickle
 
-# Chargement du dataset
-df = pd.read_csv("../data_collector/dataset.csv")
+CSV = '/data/dataset.csv'
+OUT = './model.pkl'
 
-# Variables explicatives (X) et variable cible (y)
-X = df[["temperature", "pression", "debit", "rendement"]]
-y = df["rendement"]
+def create_model():
+    # Load dataset
+    df = pd.read_csv(CSV)
+    # Drop rows with NaN
+    df = df.dropna()
 
-# Création et entraînement du modèle
-model = LinearRegression()
-model.fit(X, y)
+    # Explanatory variables (X) and target variable (y)
+    X = df[["temperature", "pressure", "flow"]]
+    y = df["yield_est"]
 
-# Évaluation rapide
-score = model.score(X, y)
-print(f"[INFO] Modèle entraîné avec un R² = {score:.3f}")
+    # Creation and training of the model
+    X_train, X_test, y_train, y_test = train_test_split(X,y,test_size=0.2,random_state=42)
+    model = RandomForestRegressor(n_estimators=50, random_state=42)
+    model.fit(X_train, y_train)
 
-# Sauvegarde du modèle
-with open("./model.pkl", "wb") as f:
-    pickle.dump(model, f)
+    # Evaluation of the model
+    preds = model.predict(X_test)
+    print('R2:', r2_score(y_test, preds))
+    print('MSE:', mean_squared_error(y_test, preds))
 
-print("[OK] Modèle sauvegardé sous 'model.pkl'")
+    # Sauvegarde du modèle
+    with open("./model.pkl", "wb") as f:
+        pickle.dump(model, f)
 
+    print(f"Model saved to {OUT}")
+
+if __name__ == "__main__":
+    create_model()
 
