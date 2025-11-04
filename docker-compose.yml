@@ -14,7 +14,7 @@ services:
   api_service:
     image: api_service:latest
     volumes:
-      - industria-dataflow-volume:/data*
+      - industria-dataflow-volume:/data
     ports:
       - 8000:8000
     depends_on:

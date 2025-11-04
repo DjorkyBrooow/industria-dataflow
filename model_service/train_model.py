@@ -6,7 +6,7 @@ from sklearn.metrics import r2_score, mean_squared_error
 import pickle
 
 CSV = '/data/dataset.csv'
-OUT = './model.pkl'
+OUT = '/data/model.pkl'
 
 def create_model():
     # Load dataset
@@ -29,7 +29,7 @@ def create_model():
     print('MSE:', mean_squared_error(y_test, preds))
 
     # Sauvegarde du modèle
-    with open("./model.pkl", "wb") as f:
+    with open("/data/model.pkl", "wb") as f:
         pickle.dump(model, f)
 
     print(f"Model saved to {OUT}")

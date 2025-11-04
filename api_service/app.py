@@ -2,24 +2,32 @@ from fastapi import FastAPI, HTTPException
 import pandas as pd
 import os
 import joblib
+import time
 
 
 app = FastAPI()
 
 CSV_PATH = os.environ.get('CSV_PATH', '/data/dataset.csv')
-MODEL_PATH = os.environ.get('MODEL_PATH', '/data/model.pkl')
 
+MODEL_PATH = os.environ.get("MODEL_PATH", "/data/model.pkl")
 model = None
 
-# Load model once
-def load_model():
+def load_model(max_retries=5, delay=2):
     global model
-    try:
-        model = joblib.load(MODEL_PATH)
-        print("✅ Model loaded")
-    except Exception as e:
-        print("❌ Model failed to load:", e)
-        model = None
+    retries = 0
+    while retries < max_retries:
+        if os.path.exists(MODEL_PATH):
+            try:
+                model = joblib.load(MODEL_PATH)
+                print("✅ Model loaded")
+                return
+            except Exception as e:
+                print("❌ Model load error:", e)
+        else:
+            print(f"Waiting for model.pkl... attempt {retries+1}")
+        retries += 1
+        time.sleep(delay)
+    print("❌ Model not loaded after retries")
 
 load_model()
 
