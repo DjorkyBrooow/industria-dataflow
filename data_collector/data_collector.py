@@ -11,7 +11,7 @@ def generate_data(date: datetime):
     pressure = round(1 + (temperature - 60) * 0.05 + random.uniform(-0.3, 0.3), 2)  # en bar
     flow = round(random.uniform(10, 20), 2)  # en L/s
     yield_est = round(95 - abs((temperature - 75)) * 0.3 - random.uniform(0, 2), 2)  # en %
-    timestamp = date.strftime("%Y-%m-%dT%H:%M:%S")
+    timestamp = date.strftime("%Y-%m-%d")
 
     return [timestamp, temperature, pressure, flow, yield_est]
 

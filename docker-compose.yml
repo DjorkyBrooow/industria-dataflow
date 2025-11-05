@@ -1,18 +1,21 @@
 services:
   data_collector:
-    image: data_collector:latest
+    build: ./data_collector
+    container_name: data_collector
     volumes:
       - industria-dataflow-volume:/data
 
   model_service:
-    image: model_service:latest
+    build: ./model_service
+    container_name: model_service
     volumes:
       - industria-dataflow-volume:/data
     depends_on:
       - data_collector
 
   api_service:
-    image: api_service:latest
+    build: ./api_service
+    container_name: api_service
     volumes:
       - industria-dataflow-volume:/data
     ports:
@@ -21,7 +24,8 @@ services:
       - model_service
 
   frontend:
-    image: frontend:latest
+    build: ./frontend
+    container_name: frontend
     ports:
       - "8080:80"
     depends_on:

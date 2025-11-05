@@ -55,17 +55,28 @@ def stats():
         "pressure_mean": round(float(df['pressure'].mean()), 2),
         "flow_mean": round(float(df['flow'].mean()), 2),
     }
+    
+@app.get("/past_data")
+def stats():
+    try:
+        df = pd.read_csv(CSV_PATH)
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+    if df.empty:
+        return {"count": 0}
+    return df.to_json()
 
 @app.post("/predict")
-def predict(temperature: float, pressure: float, flow: float):
+def predict(param: dict):
     if model is None:
         raise HTTPException(status_code=503, detail="Model not loaded")
-    X = pd.DataFrame([{
-        "temperature": temperature,
-        "pressure": pressure,
-        "flow": flow,
-    }])
+
     try:
+        X = pd.DataFrame([{
+            "temperature": param["temperature"],
+            "pressure": param["pressure"],
+            "flow": param["flow"],
+        }])
         pred = model.predict(X)[0]
         return {"yield": float(pred)}
     except Exception as e:
