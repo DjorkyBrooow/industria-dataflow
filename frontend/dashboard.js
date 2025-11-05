@@ -53,21 +53,20 @@ const evolutionChart = new Chart(ctx, {
 });
 
 // ------------------------------
-//  Mise à jour du tableau de bord
+//  Mise à jour du tableau de bord (simulation)
 // ------------------------------
 function updateDashboard() {
-  // --- Simulation IA ---
   const past = (70 + Math.random() * 10).toFixed(1);
   const present = (80 + Math.random() * 10).toFixed(1);
   const future = (85 + Math.random() * 10).toFixed(1);
 
-  // --- Mise à jour des disques ---
+  // Mise à jour des disques
   document.getElementById("pastValue").textContent = past + "%";
   document.getElementById("presentValue").textContent = present + "%";
   document.getElementById("futureValue").textContent = future + "%";
   document.getElementById("rendement").textContent = present + " %";
 
-  // --- Capteurs simulés ---
+  // Capteurs simulés
   const temp = (70 + Math.random() * 15).toFixed(1);
   const press = (90 + Math.random() * 15).toFixed(1);
   const flow = (12 + Math.random() * 3).toFixed(1);
@@ -76,12 +75,12 @@ function updateDashboard() {
   document.getElementById("press").textContent = press + " kPa";
   document.getElementById("flow").textContent = flow + " L/min";
 
-  // --- Animation de transition ---
+  // Animation douce des disques
   animateDisk("pastValue", past);
   animateDisk("presentValue", present);
   animateDisk("futureValue", future);
 
-  // --- Actualisation du graphique ---
+  // Mise à jour du graphique
   chartData = getSimulatedData();
   evolutionChart.data.datasets[0].data = chartData.values;
   evolutionChart.update();
@@ -105,29 +104,40 @@ function animateDisk(id, newValue) {
 }
 
 // ------------------------------
-//  Lancement et mise à jour périodique
+//  Démarrage automatique (simulation)
 // ------------------------------
 updateDashboard();
 setInterval(updateDashboard, 5000);
 
-
+// ------------------------------
+//  Connexion à l’API FastAPI (vraies données)
+// ------------------------------
 const ENDPOINT_API = "http://localhost:8000/";
 
-// ------------------------------
-// Récupération des données (dataset.csv et model.pkl)
-// ------------------------------
-
 async function getData() {
-  const url = ENDPOINT_API + "stats";
+  const btn = document.getElementById("loadButton");
+  btn.disabled = true;
+  btn.textContent = "⏳ Chargement...";
+
   try {
-    const response = await fetch(url);
-    if (!response.ok) {
-      throw new Error(`Response status: ${response.status}`);
-    }
+    const response = await fetch(ENDPOINT_API + "stats");
+    if (!response.ok) throw new Error(`Erreur API (${response.status})`);
 
     const result = await response.json();
-    console.log(result);
+    console.log("✅ Données reçues :", result);
+
+    // Supposons que ton API renvoie { temperature, pressure, flow, yield }
+    document.getElementById("temp").textContent = result.temperature.toFixed(1) + " °C";
+    document.getElementById("press").textContent = result.pressure.toFixed(1) + " kPa";
+    document.getElementById("flow").textContent = result.flow.toFixed(1) + " L/min";
+    document.getElementById("rendement").textContent = result.yield.toFixed(1) + " %";
+
+    alert("✅ Données réelles chargées avec succès !");
   } catch (error) {
-    console.error(error.message);
+    console.error("⚠️ Erreur :", error);
+    alert("Erreur lors du chargement des données depuis l’API !");
+  } finally {
+    btn.textContent = "🔄 Charger les données réelles";
+    btn.disabled = false;
   }
 }

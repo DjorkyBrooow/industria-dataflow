@@ -18,7 +18,7 @@
       color: #222;
     }
 
-    /* Sidebar */
+    /* ----------- SIDEBAR ----------- */
     .sidebar {
       width: 230px;
       background: #0a1f44;
@@ -56,37 +56,40 @@
       opacity: 0.6;
     }
 
-    /* Contenu principal */
+    /* ----------- CONTENU PRINCIPAL ----------- */
     .main-content {
       margin-left: 230px;
       flex: 1;
       padding: 1.5rem 2rem;
     }
 
-    /* Header */
+    /* ----------- HEADER / TOPBAR ----------- */
     .topbar {
       display: flex;
       justify-content: space-between;
       align-items: center;
       margin-bottom: 1rem;
     }
-    .user-info {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-    }
-    .avatar {
-      width: 35px;
-      height: 35px;
-      border-radius: 50%;
+
+    .btn-primary {
+      background-color: #0052a5;
+      border: none;
+      padding: 0.6rem 1rem;
+      font-weight: 500;
+      border-radius: 8px;
+      transition: 0.3s;
     }
 
-    /* KPI cards */
+    .btn-primary:hover {
+      background-color: #003f82;
+    }
+
+    /* ----------- KPI CARDS ----------- */
     .cards {
       display: grid;
       grid-template-columns: repeat(4, 1fr);
       gap: 1rem;
-      margin-bottom: 2rem;
+      margin-bottom: 1.5rem;
     }
     .card.kpi {
       background: white;
@@ -99,7 +102,7 @@
       color: white;
     }
 
-    /* Dashboard grid */
+    /* ----------- DASHBOARD GRID ----------- */
     .dashboard-grid {
       display: grid;
       grid-template-columns: 65% 35%;
@@ -113,7 +116,7 @@
       box-shadow: 0 2px 6px rgba(0,0,0,0.1);
     }
 
-    /* Disks */
+    /* ----------- DISKS ----------- */
     .disks {
       display: flex;
       flex-direction: column;
@@ -135,9 +138,7 @@
       box-shadow: inset 0 0 20px rgba(0,0,0,0.2);
       transition: all 0.4s;
     }
-    .disk:hover {
-      transform: scale(1.05);
-    }
+    .disk:hover { transform: scale(1.05); }
     .past   { background: #4a90e2; }
     .present{ background: #50e3c2; }
     .future { background: #f5a623; }
@@ -154,19 +155,15 @@
       <a href="#">Prédictions</a>
       <a href="#">Paramètres</a>
     </nav>
-    <footer>cd
-      <p>v1.0 — 2025</p>
-    </footer>
+    <footer><p>v1.0 — 2025</p></footer>
   </aside>
 
   <!-- 🌐 Contenu principal -->
   <main class="main-content">
     <header class="topbar">
       <h3>Évolution & Prédiction IA</h3>
-      <div class="user-info">
-        <span class="username">Bienvenue, Ingénieur</span>
-        <img src="https://cdn-icons-png.flaticon.com/512/3135/3135715.png" alt="user" class="avatar">
-      </div>
+      <!-- 🧩 Bouton pour charger les données réelles -->
+      <button id="loadButton" class="btn btn-primary" onclick="getData()">🔄 Charger les données réelles</button>
     </header>
 
     <!-- 📊 Cartes KPI -->
@@ -216,68 +213,7 @@
     </section>
   </main>
 
-  <script>
-    // Simulation de données IA et capteurs
-    function getSimulatedData() {
-      const years = [2020, 2021, 2022, 2023, 2024, 2025, 2026];
-      const values = years.map(() => 60 + Math.random() * 40);
-      return { years, values };
-    }
-
-    // Graphique Chart.js
-    const ctx = document.getElementById("evolutionChart").getContext("2d");
-    let chartData = getSimulatedData();
-
-    const evolutionChart = new Chart(ctx, {
-      type: "line",
-      data: {
-        labels: chartData.years,
-        datasets: [{
-          label: "Rendement (%)",
-          data: chartData.values,
-          borderColor: "#0052a5",
-          backgroundColor: "rgba(0,82,165,0.1)",
-          borderWidth: 3,
-          tension: 0.3,
-          fill: true
-        }]
-      },
-      options: {
-        scales: {
-          x: { title: { display: true, text: "Année" } },
-          y: { beginAtZero: true, max: 100, title: { display: true, text: "Rendement (%)" } }
-        },
-        plugins: {
-          legend: { labels: { color: "#222" } }
-        }
-      }
-    });
-
-    // Mise à jour des disques et des cartes
-    function updateDashboard() {
-      const past = (70 + Math.random() * 10).toFixed(1);
-      const present = (80 + Math.random() * 10).toFixed(1);
-      const future = (85 + Math.random() * 10).toFixed(1);
-
-      document.getElementById("pastValue").textContent = past + "%";
-      document.getElementById("presentValue").textContent = present + "%";
-      document.getElementById("futureValue").textContent = future + "%";
-      document.getElementById("rendement").textContent = present + " %";
-
-      // Capteurs moyens simulés
-      document.getElementById("temp").textContent = (70 + Math.random() * 15).toFixed(1) + " °C";
-      document.getElementById("press").textContent = (90 + Math.random() * 15).toFixed(1) + " kPa";
-      document.getElementById("flow").textContent = (12 + Math.random() * 3).toFixed(1) + " L/min";
-
-      // Actualiser le graphique
-      chartData = getSimulatedData();
-      evolutionChart.data.datasets[0].data = chartData.values;
-      evolutionChart.update();
-    }
-
-    // Démarrage et rafraîchissement auto
-    updateDashboard();
-    setInterval(updateDashboard, 5000);
-  </script>
+  <!-- Lien vers ton script JS -->
+  <script src="frontend/dashboard.js"></script>
 </body>
 </html>
