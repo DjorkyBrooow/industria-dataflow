@@ -1,21 +1,28 @@
-<!doctype html>
-<html>
-
+<!DOCTYPE html>
+<html lang="fr">
 <head>
-    <meta charset="utf-8" />
-    <title>Industria Dashboard</title>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <meta charset="UTF-8">
+  <title>Dashboard</title>
+  <style>
+    body {
+      font-family: sans-serif;
+      padding: 20px;
+    }
+    #result {
+      white-space: pre;
+      background: #f5f5f5;
+      padding: 10px;
+      border-radius: 6px;
+      border: 1px solid #ddd;
+    }
+  </style>
 </head>
-
 <body>
-    <h1>Industria - Dashboard</h1>
-    <div>
-        <button id="refresh">Refresh</button>
-    </div>
-    <div>
-        <canvas id="chartTemp" width="600" height="200"></canvas>
-    </div>
-    <script src="/dashboard.js"></script>
-</body>
+  <h1>Dashboard</h1>
+  <p>Résultat de l'API :</p>
 
+  <div id="result">Chargement...</div>
+
+  <script src="dashboard.js"></script>
+</body>
 </html>
