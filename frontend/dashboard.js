@@ -83,21 +83,47 @@ async function initChart() {
   const ctx = document.getElementById("evolutionChart").getContext("2d");
   const chartData = await getYearlyData();
 
+  // Couleurs des points selon leur valeur
+  const pointColors = chartData.yields.map(v =>
+    v < 70 ? "red" : v > 90 ? "green" : "#0052a5"
+  );
+
   const evolutionChart = new Chart(ctx, {
     type: "line",
     data: {
       labels: chartData.years,
-      datasets: [{
-        label: "Rendement (%)",
-        data: chartData.yields,
-        borderColor: "#0052a5",
-        backgroundColor: "rgba(0,82,165,0.1)",
-        borderWidth: 3,
-        tension: 0.3,
-        fill: true,
-        pointRadius: 5,
-        pointHoverRadius: 7
-      }]
+      datasets: [
+        {
+          label: "Rendement (%)",
+          data: chartData.yields,
+          borderColor: "#0052a5",
+          backgroundColor: "rgba(0,82,165,0.1)",
+          borderWidth: 1.5,       // ligne principale plus fine
+          tension: 0.3,
+          fill: true,
+          pointRadius: 7,         // points légèrement plus gros
+          pointHoverRadius: 9,
+          pointBackgroundColor: pointColors
+        },
+        // Ligne seuil bas 70%
+        {
+          label: "Seuil 70%",
+          data: Array(chartData.yields.length).fill(70),
+          borderColor: "orange",
+          borderWidth: 2,
+          borderDash: [6, 6],
+          pointRadius: 0
+        },
+        // Ligne seuil haut 90%
+        {
+          label: "Seuil 90%",
+          data: Array(chartData.yields.length).fill(90),
+          borderColor: "green",
+          borderWidth: 2,
+          borderDash: [6, 6],
+          pointRadius: 0
+        }
+      ]
     },
     options: {
       responsive: true,
@@ -121,9 +147,9 @@ async function initChart() {
       }
     }
   });
-  evolutionChart.data.datasets[0].data = chartData.yields;
+
   evolutionChart.update();
-}
+};
 
 window.onload = async function () {
   await initChart();
