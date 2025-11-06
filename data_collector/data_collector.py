@@ -1,6 +1,7 @@
 import csv
 import random
 import os
+import time
 from datetime import datetime, timedelta
 
 CSV = "/data/dataset.csv"
@@ -81,4 +82,6 @@ def collect_data(out = CSV):
 
 if __name__ == "__main__":
     out = os.environ.get('OUTPUT_PATH','/data/dataset.csv')
-    collect_data(out)
+    while True:
+        collect_data(out)
+        time.sleep(300)

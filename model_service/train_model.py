@@ -1,4 +1,5 @@
 # train_model.py
+import time
 import pandas as pd
 from sklearn.ensemble import RandomForestRegressor
 from sklearn.model_selection import train_test_split
@@ -40,4 +41,6 @@ def create_model():
     print(f"Model saved to {OUT}")
 
 if __name__ == "__main__":
-    create_model()
+    while True:
+        create_model()
+        time.sleep(300)

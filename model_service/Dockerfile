@@ -7,7 +7,8 @@ COPY train_model.py .
 COPY requirements.txt .
 # Install the needed dependencies
 RUN pip install --no-cache-dir -r requirements.txt
-
+# Declare volume
+VOLUME [ "/data" ]
 # Volume contenant dataset.csv
 ENV CSV_PATH=/data/dataset.csv
 ENV MODEL_PATH=/data/model.pkl
