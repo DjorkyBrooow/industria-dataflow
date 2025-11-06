@@ -54,6 +54,7 @@ def stats():
         "temperature_mean": round(float(df['temperature'].mean()), 2),
         "pressure_mean": round(float(df['pressure'].mean()), 2),
         "flow_mean": round(float(df['flow'].mean()), 2),
+        "yield_mean": round(float(df['yield_est'].mean()), 2),
     }
     
 @app.get("/past_data")
